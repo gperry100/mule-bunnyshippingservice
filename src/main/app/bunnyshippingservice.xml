@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="CE-3.6.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd">
+    <context:property-placeholder location="classpath:bunnyshippingservice.properties,/opt/mule/conf/bunnyshippingservice.properties" ignore-resource-not-found="true" ignore-unresolvable="true" />
+	
+	<amqp:connector name="AMQP_Connector" host="${rabbit.host}"
+		port="${rabbit.port}" ackMode="MANUAL" validateConnections="true" doc:name="AMQP Connector" />
+    
+       <flow name="bunnyShippingService">
+        <amqp:inbound-endpoint
+        	exchangeName="bunny_exchange" 
+        	queueName="shipping-queue"
+        	queueDurable="true" 
+        	exchange-pattern="one-way" connector-ref="AMQP_Connector" doc:name="AMQP"/>
+        <logger level="INFO" message="Received Orders"/>
+        <logger level="INFO" message="Shipping Orders"/>
+        <log-component />
+      <amqp:acknowledge-message />
+        
+    </flow> 
+</mule>
